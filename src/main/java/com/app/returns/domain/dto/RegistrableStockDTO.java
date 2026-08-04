@@ -7,10 +7,9 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter @Setter @ToString @Builder
-
 public class RegistrableStockDTO {
     private Long registrableStockId;
-    private Long domesticAccountId;
+    private Long generalAccountId;
     private Long foreignProductId;
     private BigDecimal heldQty;
     private String sourceBroker;
@@ -18,5 +17,5 @@ public class RegistrableStockDTO {
     private LocalDateTime purchaseDate;
     private BigDecimal purchasePrice;
     private String purchaseCurrency;
-    private Long purchaseFxRate;
+    private BigDecimal purchaseFxRate;
 }
