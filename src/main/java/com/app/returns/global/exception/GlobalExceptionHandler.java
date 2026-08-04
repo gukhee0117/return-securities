@@ -1,5 +1,7 @@
 package com.app.returns.global.exception;
 
+import com.app.returns.domain.exception.RegistrableStockException;
+import com.app.returns.domain.exception.RegistrableStockNotFoundException;
 import com.app.returns.domain.member.exception.MemberException;
 import com.app.returns.domain.member.exception.MemberNotFoundException;
 import com.app.returns.global.response.ApiResponseDTO;
@@ -16,6 +18,15 @@ public class GlobalExceptionHandler {
   }
   @ExceptionHandler(MemberNotFoundException.class)
   public ResponseEntity<ApiResponseDTO<Void>>handleMemberNotFound(MemberNotFoundException e) {
+    return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ApiResponseDTO.of(e.getMessage()));
+  }
+
+  @ExceptionHandler(RegistrableStockException.class)
+  public ResponseEntity<ApiResponseDTO<Void>> handleRegistrableStockException(RegistrableStockException e) {
+    return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ApiResponseDTO.of(e.getMessage()));
+  }
+  @ExceptionHandler(RegistrableStockNotFoundException.class)
+  public ResponseEntity<ApiResponseDTO<Void>> handleRegistrableStockNotFoundException(RegistrableStockNotFoundException e) {
     return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ApiResponseDTO.of(e.getMessage()));
   }
 }
