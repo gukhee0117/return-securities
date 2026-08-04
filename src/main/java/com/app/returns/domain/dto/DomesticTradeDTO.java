@@ -7,10 +7,9 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter @Setter @ToString @Builder
-
 public class DomesticTradeDTO {
     private Long tradeId;
-    private Long domesticAccountId;
+    private Long generalAccountId;
     private String tradeType;
     private String stockCode;
     private BigDecimal qty;
