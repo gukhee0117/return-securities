@@ -4,6 +4,7 @@ import com.app.returns.domain.dto.request.RegistrableStockRequestDTO;
 import com.app.returns.domain.dto.response.RegistrableStockResponseDTO;
 import com.app.returns.domain.service.RegistrableStockService;
 import com.app.returns.global.response.ApiResponseDTO;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -19,9 +20,8 @@ public class RegistrableStockApi {
 
     @GetMapping
     public ResponseEntity<ApiResponseDTO<RegistrableStockResponseDTO>> getRegistrableStock(
-            RegistrableStockRequestDTO request) {
-        RegistrableStockResponseDTO result = registrableStockService.findHeldQty(
-                request.getGeneralAccountId(), request.getForeignProductId());
+            @Valid RegistrableStockRequestDTO request) {
+        RegistrableStockResponseDTO result = registrableStockService.findHeldQty(request);
         return ResponseEntity.ok(ApiResponseDTO.of("조회 성공", result));
     }
 }
