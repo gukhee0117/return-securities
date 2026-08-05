@@ -18,11 +18,11 @@ public class RegistrableStockResponseDTO {
     private BigDecimal purchaseFxRate;
 
     public RegistrableStockResponseDTO(RegistrableStockDTO dto) {
-        this.heldQty = dto.getHeldQty() != null ? dto.getHeldQty() : null;
-        this.sourceBroker = dto.getSourceBroker() != null ? dto.getSourceBroker() : null;
-        this.purchaseDate = dto.getPurchaseDate() != null ? dto.getPurchaseDate() : null;
-        this.purchasePrice = dto.getPurchasePrice() != null ? dto.getPurchasePrice() : null;
-        this.purchaseCurrency = dto.getPurchaseCurrency() != null ? dto.getPurchaseCurrency() : null;
-        this.purchaseFxRate = dto.getPurchaseFxRate() != null ? dto.getPurchaseFxRate() : null;
+        this.heldQty = dto.getHeldQty();
+        this.sourceBroker = dto.getSourceBroker();
+        this.purchaseDate = dto.getPurchaseDate();
+        this.purchasePrice = dto.getPurchasePrice();
+        this.purchaseCurrency = dto.getPurchaseCurrency();
+        this.purchaseFxRate = dto.getPurchaseFxRate();
     }
 }
