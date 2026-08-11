@@ -1,5 +1,6 @@
-package com.app.returns.domain.dto;
+package com.app.returns.domain.generalaccount.dto;
 
+import com.app.returns.domain.generalaccount.type.GeneralStatus;
 import lombok.*;
 
 @AllArgsConstructor
@@ -10,5 +11,5 @@ public class GeneralAccountDTO {
     private Long generalCustomerId;
     private String accountNo;
     private String accountType;
-    private String status;
+    private GeneralStatus status;
 }
