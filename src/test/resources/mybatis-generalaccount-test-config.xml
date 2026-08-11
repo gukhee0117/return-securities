@@ -6,7 +6,6 @@
 <configuration>
     <typeAliases>
         <typeAlias alias="GeneralAccountDTO" type="com.app.returns.domain.generalaccount.dto.GeneralAccountDTO"/>
-        <typeAlias alias="GeneralAccountRequestDTO" type="com.app.returns.domain.generalaccount.dto.request.GeneralAccountRequestDTO"/>
     </typeAliases>
 
     <environments default="generalaccount-mapper-test">

@@ -32,7 +32,8 @@ public class GeneralAccountServiceImpl implements GeneralAccountService{
             );
         }
 
-        GeneralAccountDTO account = generalAccountMapper.findByCiHashAndGeneralAccountId(requestDTO)
+        GeneralAccountDTO account = generalAccountMapper.findByCiHashAndGeneralAccountId(
+                requestDTO.getCiHash(), requestDTO.getGeneralAccountId())
                 .orElseThrow(()->new GeneralAccountException(
                         "해당 고객 소유의 계좌가 아닙니다."
                 ));

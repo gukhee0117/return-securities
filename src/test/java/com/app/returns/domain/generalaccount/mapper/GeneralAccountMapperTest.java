@@ -1,7 +1,6 @@
 package com.app.returns.domain.generalaccount.mapper;
 
 import com.app.returns.domain.generalaccount.dto.GeneralAccountDTO;
-import com.app.returns.domain.generalaccount.dto.request.GeneralAccountRequestDTO;
 import com.app.returns.domain.generalaccount.type.GeneralStatus;
 import org.apache.ibatis.datasource.pooled.PooledDataSource;
 import org.apache.ibatis.io.Resources;
@@ -89,13 +88,10 @@ class GeneralAccountMapperTest {
         insertCustomer(2L, "ci-other");
         insertAccount(10L, 1L, "1000000001", "ACTIVE");
 
-        GeneralAccountRequestDTO ownerRequest = request("ci-owner", 10L);
-        GeneralAccountRequestDTO otherRequest = request("ci-other", 10L);
-
         Optional<GeneralAccountDTO> ownerResult =
-                generalAccountMapper.findByCiHashAndGeneralAccountId(ownerRequest);
+                generalAccountMapper.findByCiHashAndGeneralAccountId("ci-owner", 10L);
         Optional<GeneralAccountDTO> otherResult =
-                generalAccountMapper.findByCiHashAndGeneralAccountId(otherRequest);
+                generalAccountMapper.findByCiHashAndGeneralAccountId("ci-other", 10L);
 
         assertThat(ownerResult).isPresent();
         assertThat(ownerResult.orElseThrow().getAccountNo()).isEqualTo("1000000001");
@@ -109,17 +105,10 @@ class GeneralAccountMapperTest {
         insertAccount(10L, 1L, "1000000001", "CLOSED");
 
         GeneralAccountDTO result = generalAccountMapper
-                .findByCiHashAndGeneralAccountId(request("ci-owner", 10L))
+                .findByCiHashAndGeneralAccountId("ci-owner", 10L)
                 .orElseThrow();
 
         assertThat(result.getStatus()).isEqualTo(GeneralStatus.CLOSED);
-    }
-
-    private GeneralAccountRequestDTO request(String ciHash, Long generalAccountId) {
-        return GeneralAccountRequestDTO.builder()
-                .ciHash(ciHash)
-                .generalAccountId(generalAccountId)
-                .build();
     }
 
     private void resetSchema() throws SQLException {

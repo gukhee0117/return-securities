@@ -24,15 +24,4 @@ public class GeneralAccountApi {
         GeneralAccountResponseDTO result = generalAccountService.verifyGeneralAccount(requestDTO);
         return ResponseEntity.ok(ApiResponseDTO.of("일반계좌 검증 성공",result));
     }
-
-
-
-
-
-
-
-
-
-
-
 }
