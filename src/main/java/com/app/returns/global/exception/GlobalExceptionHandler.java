@@ -1,7 +1,9 @@
 package com.app.returns.global.exception;
 
+import com.app.returns.domain.generalaccount.exception.GeneralAccountException;
 import com.app.returns.domain.exception.RegistrableStockException;
 import com.app.returns.domain.exception.RegistrableStockNotFoundException;
+import com.app.returns.domain.generalaccount.exception.GeneralAccountNotFoundException;
 import com.app.returns.domain.member.exception.MemberException;
 import com.app.returns.domain.member.exception.MemberNotFoundException;
 import com.app.returns.global.response.ApiResponseDTO;
@@ -49,5 +51,16 @@ public class GlobalExceptionHandler {
             .map(DefaultMessageSourceResolvable::getDefaultMessage)
             .orElse("잘못된 요청입니다.");
     return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ApiResponseDTO.of(message));
+  }
+
+  //GeneralAccount
+  @ExceptionHandler(GeneralAccountException.class)
+  public ResponseEntity<ApiResponseDTO<Void>> handleGeneralAccountException(GeneralAccountException e){
+    return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ApiResponseDTO.of(e.getMessage()));
+  }
+
+  @ExceptionHandler(GeneralAccountNotFoundException.class)
+  public ResponseEntity<ApiResponseDTO<Void>> handleGeneralAccountNotFoundException(GeneralAccountNotFoundException e){
+    return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ApiResponseDTO.of(e.getMessage()));
   }
 }

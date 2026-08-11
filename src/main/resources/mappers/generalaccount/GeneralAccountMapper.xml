@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.app.returns.domain.generalaccount.mapper.GeneralAccountMapper" >
+    <select id ="findByCiHashAndGeneralAccountId" parameterType="GeneralAccountRequestDTO" resultType="GeneralAccountDTO">
+
+        SELECT
+        ga.general_account_id AS generalAccountId,
+        ga.general_customer_id AS generalCustomerId,
+        ga.account_no AS accountNo,
+        ga.account_type AS accountType,
+        ga.status AS status
+        FROM general_account ga JOIN general_customer gc ON ga.general_customer_id = gc.general_customer_id
+        WHERE ga.general_account_id = #{generalAccountId}
+        AND gc.ci_hash = #{ciHash}
+    </select>
+
+    <select id = "existsCustomerByCiHash" parameterType="String" resultType="boolean">
+        SELECT COUNT(*) > 0
+        FROM general_customer
+        WHERE ci_hash = #{ciHash}
+    </select>
+
+    <select id="existsGeneralAccountById" parameterType="Long" resultType="boolean">
+        SELECT COUNT(*) > 0
+        FROM general_account
+        WHERE general_account_id = #{generalAccountId}
+    </select>
+
+</mapper>
