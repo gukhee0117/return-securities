@@ -10,7 +10,6 @@ import lombok.*;
 @Getter @Setter
 @ToString
 @Builder
-
 public class GeneralAccountRequestDTO {
     @NotBlank(message = "ciHash는 필수입니다.")
     private String ciHash;

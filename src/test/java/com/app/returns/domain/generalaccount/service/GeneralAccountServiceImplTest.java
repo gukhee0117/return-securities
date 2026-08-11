@@ -40,7 +40,7 @@ class GeneralAccountServiceImplTest {
                 .hasMessage("고객을 찾을 수 없습니다.");
 
         verify(generalAccountMapper, never()).existsGeneralAccountById(request.getGeneralAccountId());
-        verify(generalAccountMapper, never()).findByCiHashAndGeneralAccountId(request);
+        verify(generalAccountMapper, never()).findByCiHashAndGeneralAccountId("ci-owner", 10L);
     }
 
     @Test
@@ -53,7 +53,7 @@ class GeneralAccountServiceImplTest {
                 .isInstanceOf(GeneralAccountNotFoundException.class)
                 .hasMessage("계좌를 찾을 수 없습니다.");
 
-        verify(generalAccountMapper, never()).findByCiHashAndGeneralAccountId(request);
+        verify(generalAccountMapper, never()).findByCiHashAndGeneralAccountId("ci-owner", 10L);
     }
 
     @Test
@@ -61,7 +61,8 @@ class GeneralAccountServiceImplTest {
         GeneralAccountRequestDTO request = request();
         when(generalAccountMapper.existsCustomerByCiHash("ci-owner")).thenReturn(true);
         when(generalAccountMapper.existsGeneralAccountById(10L)).thenReturn(true);
-        when(generalAccountMapper.findByCiHashAndGeneralAccountId(request)).thenReturn(Optional.empty());
+        when(generalAccountMapper.findByCiHashAndGeneralAccountId("ci-owner", 10L))
+                .thenReturn(Optional.empty());
 
         assertThatThrownBy(() -> generalAccountService.verifyGeneralAccount(request))
                 .isExactlyInstanceOf(GeneralAccountException.class)
@@ -107,6 +108,7 @@ class GeneralAccountServiceImplTest {
                 .build();
         when(generalAccountMapper.existsCustomerByCiHash("ci-owner")).thenReturn(true);
         when(generalAccountMapper.existsGeneralAccountById(10L)).thenReturn(true);
-        when(generalAccountMapper.findByCiHashAndGeneralAccountId(request)).thenReturn(Optional.of(account));
+        when(generalAccountMapper.findByCiHashAndGeneralAccountId("ci-owner", 10L))
+                .thenReturn(Optional.of(account));
     }
 }
