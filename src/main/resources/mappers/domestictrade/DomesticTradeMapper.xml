@@ -14,7 +14,7 @@
         FROM domestic_trade dt
         JOIN general_customer gc ON gc.general_customer_id = dt.general_customer_id
         WHERE gc.ci_hash = #{ciHash}
-        ORDER BY dt.executed_at DESC
+        ORDER BY dt.executed_at DESC, dt.trade_id DESC
     </select>
 
 </mapper>
