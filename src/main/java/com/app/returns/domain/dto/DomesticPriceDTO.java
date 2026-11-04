@@ -9,6 +9,7 @@ import lombok.NoArgsConstructor;
 @Getter
 @NoArgsConstructor
 public class DomesticPriceDTO {
+    // MyBatis field injection용 조회 DTO
     private String ticker;
     private BigDecimal priceKrw;
     private LocalDate baseDate;

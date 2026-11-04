@@ -9,11 +9,11 @@ import org.junit.jupiter.api.Test;
 
 class DomesticPriceServiceImplTest {
     @Test
-    void deduplicatesRequestAndKeepsMissingPricesAbsent() {
+    void deduplicatesRequestInEncounterOrder() {
         var mapper = mock(DomesticPriceMapper.class);
-        when(mapper.selectLatestByTickers(List.of("000660", "005930"))).thenReturn(List.of());
+        when(mapper.selectLatestByTickers(List.of("005930", "000660"))).thenReturn(List.of());
         var service = new DomesticPriceServiceImpl(mapper);
         assertThat(service.findLatest(List.of("005930", "000660", "005930"))).isEmpty();
-        verify(mapper).selectLatestByTickers(List.of("000660", "005930"));
+        verify(mapper).selectLatestByTickers(List.of("005930", "000660"));
     }
 }

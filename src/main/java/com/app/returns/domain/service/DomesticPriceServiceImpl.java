@@ -15,7 +15,7 @@ public class DomesticPriceServiceImpl implements DomesticPriceService {
     @Override
     @Transactional(readOnly = true)
     public List<DomesticPriceResponseDTO> findLatest(List<String> tickers) {
-        return mapper.selectLatestByTickers(tickers.stream().distinct().sorted().toList()).stream()
+        return mapper.selectLatestByTickers(tickers.stream().distinct().toList()).stream()
                 .map(DomesticPriceResponseDTO::new)
                 .toList();
     }

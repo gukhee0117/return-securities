@@ -98,4 +98,18 @@ class DomesticPriceMapperTest {
             assertThat(result.getBigDecimal(1)).isEqualByComparingTo("70000");
         }
     }
+
+    @Test
+    void invalidLatestPriceIsOmittedWithoutFallingBackToOlderPositivePrice() throws Exception {
+        for (String price : List.of("0", "-1", "NULL")) {
+            try (var statement = session.getConnection().createStatement()) {
+                statement.execute(
+                        "UPDATE domestic_base_price SET close_price="
+                                + price
+                                + " WHERE stock_code='005930' AND base_date='2026-11-17'");
+            }
+            session.clearCache();
+            assertThat(mapper.selectLatestByTickers(List.of("005930"))).isEmpty();
+        }
+    }
 }

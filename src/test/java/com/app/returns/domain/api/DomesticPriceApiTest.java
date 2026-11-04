@@ -28,7 +28,7 @@ class DomesticPriceApiTest {
     }
 
     @Test
-    void commaSeparatedTickersAreBoundAndMissingPriceIsNotZero() throws Exception {
+    void commaSeparatedTickersAreBound() throws Exception {
         when(service.findLatest(List.of("005930", "000660"))).thenReturn(List.of());
         mvc.perform(get("/api/domestic-prices").param("tickers", "005930,000660"))
                 .andExpect(status().isOk())
