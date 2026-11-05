@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.app.returns.domain.mapper.DomesticPriceMapper">
+    <select id="selectLatestByTickers" resultType="com.app.returns.domain.dto.DomesticPriceDTO">
+        SELECT p.stock_code AS ticker, p.close_price AS price_krw,
+               p.base_date, p.fetched_at AS price_at, p.source
+        FROM domestic_base_price p
+        JOIN (
+            SELECT stock_code, MAX(base_date) AS base_date
+            FROM domestic_base_price
+            WHERE stock_code IN
+            <foreach collection="tickers" item="ticker" open="(" separator="," close=")">
+                #{ticker}
+            </foreach>
+            GROUP BY stock_code
+        ) latest ON latest.stock_code = p.stock_code AND latest.base_date = p.base_date
+        <!-- 최신 행의 가격이 없거나 0 이하이면 종목을 제외한다. 과거 가격으로 대체하지 않는다. -->
+        WHERE p.close_price IS NOT NULL AND p.close_price &gt; 0
+        ORDER BY p.stock_code
+    </select>
+</mapper>
