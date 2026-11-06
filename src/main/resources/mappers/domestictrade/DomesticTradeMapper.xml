@@ -17,4 +17,18 @@
         ORDER BY dt.executed_at DESC, dt.trade_id DESC
     </select>
 
+    <select id="selectTradeCandidates" resultType="com.app.returns.domain.market.TradeCandidate">
+        SELECT DISTINCT gc.general_customer_id, gc.ci_hash
+        FROM domestic_trade dt
+        JOIN general_customer gc ON gc.general_customer_id = dt.general_customer_id
+    </select>
+
+    <insert id="insertGeneratedTrade">
+        INSERT INTO domestic_trade
+            (general_customer_id, trade_type, stock_code, qty, price, executed_at, maria_order_id)
+        VALUES
+            (#{generalCustomerId}, #{tradeType}, #{stockCode}, #{qty}, #{price}, #{executedAt},
+             #{mariaOrderId})
+    </insert>
+
 </mapper>
