@@ -17,6 +17,10 @@
         ORDER BY dt.executed_at DESC, dt.trade_id DESC
     </select>
 
+    <select id="selectGeneralCustomerIdByCiHash" resultType="long">
+        SELECT general_customer_id FROM general_customer WHERE ci_hash = #{ciHash}
+    </select>
+
     <select id="selectTradeCandidates" resultType="com.app.returns.domain.market.TradeCandidate">
         SELECT DISTINCT gc.general_customer_id, gc.ci_hash
         FROM domestic_trade dt

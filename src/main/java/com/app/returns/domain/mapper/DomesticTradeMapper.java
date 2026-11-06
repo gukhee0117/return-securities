@@ -6,12 +6,16 @@ import com.app.returns.domain.market.TradeCandidate;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
 @Mapper
 public interface DomesticTradeMapper {
     List<DomesticTradeDTO> selectByCiHash(DomesticTradeRequestDTO requestDTO);
+
+    /** ci_hash로 증권사 고객 번호를 찾는다. 없는 고객이면 비어 있다. */
+    Optional<Long> selectGeneralCustomerIdByCiHash(@Param("ciHash") String ciHash);
 
     /** 국내 거래 이력이 있는 고객(거래 생성기 후보). */
     List<TradeCandidate> selectTradeCandidates();

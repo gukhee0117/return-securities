@@ -110,4 +110,10 @@ class DomesticTradeGeneratorMapperTest {
                                         77L))
                 .isNotNull();
     }
+
+    @Test
+    void ci_hash로_증권사_고객_번호를_찾는다() {
+        assertThat(mapper.selectGeneralCustomerIdByCiHash("b".repeat(64))).contains(2L);
+        assertThat(mapper.selectGeneralCustomerIdByCiHash("z".repeat(64))).isEmpty();
+    }
 }
