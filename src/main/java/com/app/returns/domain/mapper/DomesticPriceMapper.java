@@ -8,6 +8,8 @@ import org.apache.ibatis.annotations.Param;
 
 @Mapper
 public interface DomesticPriceMapper {
+    List<String> selectStockCodes();
+
     List<DomesticPriceDTO> selectLatestByTickers(
             @Param("tickers") List<String> tickers, @Param("asOf") LocalDate asOf);
 }
