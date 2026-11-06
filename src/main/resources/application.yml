@@ -47,7 +47,7 @@ market:
   price:
     etf-codes: 069500,122630
   factor:
-    interval-ms: 5000
+    interval-ms: 3000
 # MyBatis
 mybatis:
   # Mapper XML 위치

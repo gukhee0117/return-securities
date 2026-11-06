@@ -16,7 +16,7 @@ public class PriceFactorScheduler {
     private final Random random = new Random();
     private volatile List<String> stockCodes;
 
-    @Scheduled(fixedDelayString = "${market.factor.interval-ms:5000}")
+    @Scheduled(fixedDelayString = "${market.factor.interval-ms:3000}")
     public void tick() {
         if (stockCodes == null) {
             stockCodes = mapper.selectStockCodes();
