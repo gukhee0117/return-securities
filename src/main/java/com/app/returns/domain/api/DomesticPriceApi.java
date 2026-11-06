@@ -19,10 +19,11 @@ import org.springframework.web.bind.annotation.RestController;
 public class DomesticPriceApi {
     private final DomesticPriceService service;
 
-    /** 종목별 가장 최근 base_date의 저장 가격. 없는 종목은 누락되며 0원으로 대체하지 않는다. */
+    /** 종목별 asOf 이하 가장 최근 base_date의 저장 가격과 그 직전 종가. 없는 종목은 누락되며 0원으로 대체하지 않는다. */
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     public ApiResponseDTO<List<DomesticPriceResponseDTO>> getPrices(
             @Valid @ModelAttribute DomesticPriceRequestDTO request) {
-        return ApiResponseDTO.of("현재가 조회 성공", service.findLatest(request.getTickers()));
+        return ApiResponseDTO.of(
+                "현재가 조회 성공", service.findLatest(request.getTickers(), request.getAsOf()));
     }
 }

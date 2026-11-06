@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.app.returns.domain.mapper.ForeignPriceMapper">
+    <!-- 종목별 price_date < asOf 중 최신 행. 행이 없는 종목은 결과에서 빠진다(0원으로 채우지 않는다). -->
+    <select id="selectPreviousCloses" resultType="com.app.returns.domain.dto.ForeignPriceDTO">
+        SELECT p.ticker, p.close_price AS previous_close, p.price_date AS previous_close_date
+        FROM foreign_daily_close p
+        JOIN (
+            SELECT ticker, MAX(price_date) AS price_date
+            FROM foreign_daily_close
+            WHERE price_date &lt; #{asOf} AND ticker IN
+            <foreach collection="tickers" item="ticker" open="(" separator="," close=")">
+                #{ticker}
+            </foreach>
+            GROUP BY ticker
+        ) latest ON latest.ticker = p.ticker AND latest.price_date = p.price_date
+        ORDER BY p.ticker
+    </select>
+</mapper>

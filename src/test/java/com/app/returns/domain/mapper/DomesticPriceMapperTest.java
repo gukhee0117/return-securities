@@ -61,7 +61,9 @@ class DomesticPriceMapperTest {
 
     @Test
     void returnsLatestStoredRowPerRequestedTickerAndPreservesMetadata() throws Exception {
-        var rows = mapper.selectLatestByTickers(List.of("005930", "000660", "999999"));
+        var rows =
+                mapper.selectLatestByTickers(
+                        List.of("005930", "000660", "999999"), LocalDate.of(2026, 11, 17));
         assertThat(rows).hasSize(2);
         assertThat(rows.get(0).getTicker()).isEqualTo("000660");
         var samsung = rows.get(1);
@@ -80,14 +82,18 @@ class DomesticPriceMapperTest {
 
     @Test
     void updatedPriceIsVisibleOnTheNextReadWithoutChangingHistory() throws Exception {
-        assertThat(mapper.selectLatestByTickers(List.of("005930")).get(0).getPriceKrw())
+        assertThat(
+                        mapper.selectLatestByTickers(List.of("005930"), LocalDate.of(2026, 11, 17))
+                                .get(0)
+                                .getPriceKrw())
                 .isEqualByComparingTo("71000");
         try (var statement = session.getConnection().createStatement()) {
             statement.execute(
                     "UPDATE domestic_base_price SET close_price=72000, fetched_at='2026-11-18 09:00:00' WHERE stock_code='005930' AND base_date='2026-11-17'");
         }
         session.clearCache();
-        var updated = mapper.selectLatestByTickers(List.of("005930")).get(0);
+        var updated =
+                mapper.selectLatestByTickers(List.of("005930"), LocalDate.of(2026, 11, 17)).get(0);
         assertThat(updated.getPriceKrw()).isEqualByComparingTo("72000");
         assertThat(updated.getPriceAt()).isEqualTo(LocalDateTime.of(2026, 11, 18, 9, 0));
         try (var statement = session.getConnection().createStatement();
@@ -109,7 +115,26 @@ class DomesticPriceMapperTest {
                                 + " WHERE stock_code='005930' AND base_date='2026-11-17'");
             }
             session.clearCache();
-            assertThat(mapper.selectLatestByTickers(List.of("005930"))).isEmpty();
+            assertThat(mapper.selectLatestByTickers(List.of("005930"), LocalDate.of(2026, 11, 17)))
+                    .isEmpty();
         }
+    }
+
+    @Test
+    void asOfPicksLatestRowOnOrBeforeAndReturnsPreviousClose() throws Exception {
+        var onDay =
+                mapper.selectLatestByTickers(List.of("005930"), LocalDate.of(2026, 11, 17)).get(0);
+        assertThat(onDay.getPriceKrw()).isEqualByComparingTo("71000");
+        assertThat(onDay.getPreviousCloseKrw()).isEqualByComparingTo("70000");
+        var afterLast =
+                mapper.selectLatestByTickers(List.of("005930"), LocalDate.of(2026, 12, 31)).get(0);
+        assertThat(afterLast.getBaseDate()).isEqualTo(LocalDate.of(2026, 11, 17));
+        assertThat(afterLast.getPreviousCloseKrw()).isEqualByComparingTo("70000");
+        var between =
+                mapper.selectLatestByTickers(List.of("005930"), LocalDate.of(2026, 11, 10)).get(0);
+        assertThat(between.getBaseDate()).isEqualTo(LocalDate.of(2026, 11, 3));
+        assertThat(between.getPreviousCloseKrw()).isNull();
+        assertThat(mapper.selectLatestByTickers(List.of("005930"), LocalDate.of(2026, 3, 1)))
+                .isEmpty();
     }
 }

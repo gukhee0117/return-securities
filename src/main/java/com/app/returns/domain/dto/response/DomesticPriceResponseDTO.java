@@ -11,6 +11,7 @@ import lombok.Getter;
 public class DomesticPriceResponseDTO {
     private final String ticker;
     private final BigDecimal priceKrw;
+    private final BigDecimal previousCloseKrw;
     private final LocalDate baseDate;
     private final LocalDateTime priceAt;
     private final String source;
@@ -18,6 +19,7 @@ public class DomesticPriceResponseDTO {
     public DomesticPriceResponseDTO(DomesticPriceDTO price) {
         ticker = price.getTicker();
         priceKrw = price.getPriceKrw();
+        previousCloseKrw = price.getPreviousCloseKrw();
         baseDate = price.getBaseDate();
         priceAt = price.getPriceAt();
         source = price.getSource();
