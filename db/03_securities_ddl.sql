@@ -9,6 +9,8 @@ CREATE DATABASE IF NOT EXISTS securities DEFAULT CHARSET utf8mb4 COLLATE utf8mb4
 USE securities;
 
 SET FOREIGN_KEY_CHECKS = 0;
+DROP TABLE IF EXISTS fx_daily_rate;
+DROP TABLE IF EXISTS foreign_daily_close;
 DROP TABLE IF EXISTS domestic_base_price;
 DROP TABLE IF EXISTS domestic_trade;
 DROP TABLE IF EXISTS registrable_stock;
@@ -99,6 +101,25 @@ CREATE TABLE domestic_base_price (
     PRIMARY KEY (stock_code, base_date),
     CONSTRAINT chk_dbp_price CHECK (close_price > 0)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='시세 엔진 기준가(최근 종가)';
+
+-- 해외 일별 종가(그 날짜의 종가). 앱은 price_date < 업무일 중 최신 행을 전일 종가로 쓴다.
+-- [SEED] data-generator가 채운다(MarketData.close).
+CREATE TABLE foreign_daily_close (
+    ticker      VARCHAR(20)   NOT NULL,
+    price_date  DATE          NOT NULL,
+    close_price DECIMAL(15,4) NOT NULL,
+    PRIMARY KEY (ticker, price_date)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='해외 일별 종가(시연용 시드 시세)';
+
+-- 그날 앱이 쓰는 고시·확정 환율. 1단위 기준(JPY도 1엔).
+-- [SEED] data-generator가 채운다(MarketData.baseRate/finalRate).
+CREATE TABLE fx_daily_rate (
+    currency   VARCHAR(3)    NOT NULL,
+    price_date DATE          NOT NULL,
+    base_rate  DECIMAL(15,6) NOT NULL,
+    final_rate DECIMAL(15,6) NOT NULL,
+    PRIMARY KEY (currency, price_date)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='일별 환율(시연용 시드 시세)';
 
 -- FOREIGN KEYS (증권사 내부만)
 ALTER TABLE general_account   ADD CONSTRAINT fk_general_account__customer      FOREIGN KEY (general_customer_id) REFERENCES general_customer (general_customer_id);
