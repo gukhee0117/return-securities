@@ -11,13 +11,20 @@ import lombok.Getter;
 public class DomesticPriceResponseDTO {
     private final String ticker;
     private final BigDecimal priceKrw;
+    private final BigDecimal previousCloseKrw;
     private final LocalDate baseDate;
     private final LocalDateTime priceAt;
     private final String source;
 
     public DomesticPriceResponseDTO(DomesticPriceDTO price) {
+        this(price, price.getPriceKrw());
+    }
+
+    /** 저장 종가가 아니라 계산한 현재가를 내려 줄 때. 전일 종가·기준일·저장 시각은 행 그대로. */
+    public DomesticPriceResponseDTO(DomesticPriceDTO price, BigDecimal currentPriceKrw) {
         ticker = price.getTicker();
-        priceKrw = price.getPriceKrw();
+        priceKrw = currentPriceKrw;
+        previousCloseKrw = price.getPreviousCloseKrw();
         baseDate = price.getBaseDate();
         priceAt = price.getPriceAt();
         source = price.getSource();

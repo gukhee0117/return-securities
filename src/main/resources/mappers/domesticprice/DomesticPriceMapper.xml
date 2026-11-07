@@ -1,14 +1,22 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.app.returns.domain.mapper.DomesticPriceMapper">
+    <select id="selectStockCodes" resultType="string">
+        SELECT DISTINCT stock_code FROM domestic_base_price ORDER BY stock_code
+    </select>
     <select id="selectLatestByTickers" resultType="com.app.returns.domain.dto.DomesticPriceDTO">
         SELECT p.stock_code AS ticker, p.close_price AS price_krw,
+               (SELECT q.close_price FROM domestic_base_price q
+                WHERE q.stock_code = p.stock_code
+                  AND q.base_date = (SELECT MAX(r.base_date) FROM domestic_base_price r
+                                     WHERE r.stock_code = p.stock_code AND r.base_date &lt; p.base_date)
+               ) AS previous_close_krw,
                p.base_date, p.fetched_at AS price_at, p.source
         FROM domestic_base_price p
         JOIN (
             SELECT stock_code, MAX(base_date) AS base_date
             FROM domestic_base_price
-            WHERE stock_code IN
+            WHERE base_date &lt;= #{asOf} AND stock_code IN
             <foreach collection="tickers" item="ticker" open="(" separator="," close=")">
                 #{ticker}
             </foreach>

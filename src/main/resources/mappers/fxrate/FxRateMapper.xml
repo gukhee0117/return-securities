@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.app.returns.domain.mapper.FxRateMapper">
+    <!-- 통화별 price_date <= asOf 중 최신 행. -->
+    <select id="selectRates" resultType="com.app.returns.domain.dto.FxRateDTO">
+        SELECT r.currency, r.base_rate, r.final_rate, r.price_date AS rate_date
+        FROM fx_daily_rate r
+        JOIN (
+            SELECT currency, MAX(price_date) AS price_date
+            FROM fx_daily_rate
+            WHERE price_date &lt;= #{asOf} AND currency IN
+            <foreach collection="currencies" item="currency" open="(" separator="," close=")">
+                #{currency}
+            </foreach>
+            GROUP BY currency
+        ) latest ON latest.currency = r.currency AND latest.price_date = r.price_date
+        ORDER BY r.currency
+    </select>
+</mapper>

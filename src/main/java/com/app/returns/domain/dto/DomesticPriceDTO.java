@@ -12,6 +12,7 @@ public class DomesticPriceDTO {
     // MyBatis field injection용 조회 DTO
     private String ticker;
     private BigDecimal priceKrw;
+    private BigDecimal previousCloseKrw;
     private LocalDate baseDate;
     private LocalDateTime priceAt;
     private String source;

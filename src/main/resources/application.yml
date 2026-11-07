@@ -24,10 +24,30 @@ spring:
       minimum-idle: 5 # 최소 유지 커넥션
       connection-timeout: 30000 # 커넥션 획득 대기 시간(ms)
       idle-timeout: 600000 # 유휴 커넥션 유지 시간(ms)
+  task:
+    scheduling:
+      pool:
+        size: 2 # 배수 갱신과 거래 생성이 서로 기다리지 않게
   # DevTools
   devtools:
     restart:
       exclude: "**/domain/**"
+# 국내 현재가 변동(종가 x 배수)과 거래 생성기
+market:
+  trade:
+    enabled: ${MARKET_TRADE_ENABLED:false}
+    min-delay-ms: 1000
+    max-delay-ms: 4000
+    buy-ratio: 0.94
+    max-attempts: 5
+    excluded-ci-hashes: ${MARKET_TRADE_EXCLUDED_CI_HASHES:}
+  maria:
+    url: ${MARIA_INTERNAL_URL:}
+    secret: ${INTERNAL_SECRET:}
+  price:
+    etf-codes: 069500,122630
+  factor:
+    interval-ms: 3000
 # MyBatis
 mybatis:
   # Mapper XML 위치
