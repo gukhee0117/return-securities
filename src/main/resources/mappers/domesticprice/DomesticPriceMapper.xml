@@ -26,4 +26,23 @@
         WHERE p.close_price IS NOT NULL AND p.close_price &gt; 0
         ORDER BY p.stock_code
     </select>
+    <!-- 종목별 최근 일별 종가. 윈도 함수로 종목마다 최신 days개를 고르고, fromDate로 스캔 범위를 묶는다(기본키 stock_code, base_date) -->
+    <select id="selectHistoryByTickers"
+            resultType="com.app.returns.domain.dto.DomesticPriceHistoryRowDTO">
+        SELECT t.stock_code AS ticker, t.base_date AS base_date, t.close_price AS close_krw
+        FROM (
+            SELECT p.stock_code, p.base_date, p.close_price,
+                   ROW_NUMBER() OVER (PARTITION BY p.stock_code ORDER BY p.base_date DESC) AS rn
+            FROM domestic_base_price p
+            WHERE p.stock_code IN
+            <foreach collection="tickers" item="ticker" open="(" separator="," close=")">
+                #{ticker}
+            </foreach>
+              AND p.base_date &lt;= #{asOf}
+              AND p.base_date &gt; #{fromDate}
+              AND p.close_price IS NOT NULL AND p.close_price &gt; 0
+        ) t
+        WHERE t.rn &lt;= #{days}
+        ORDER BY t.stock_code, t.base_date
+    </select>
 </mapper>
