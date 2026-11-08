@@ -8,11 +8,11 @@ import com.app.returns.domain.market.KrxTickSize;
 import com.app.returns.domain.market.PriceFactorStore;
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -65,20 +65,18 @@ public class DomesticPriceServiceImpl implements DomesticPriceService {
                         asOf,
                         asOf.minusDays(HISTORY_LOOKBACK_DAYS),
                         days);
-        Map<String, List<DomesticPriceHistoryResponseDTO.Point>> byTicker =
-                rows.stream()
-                        .collect(
-                                Collectors.groupingBy(
-                                        DomesticPriceHistoryRowDTO::getTicker,
-                                        LinkedHashMap::new,
-                                        Collectors.mapping(
-                                                row ->
-                                                        new DomesticPriceHistoryResponseDTO.Point(
-                                                                row.getBaseDate(),
-                                                                row.getCloseKrw()),
-                                                Collectors.toList())));
+        Map<String, List<DomesticPriceHistoryResponseDTO.Point>> byTicker = new LinkedHashMap<>();
+        for (DomesticPriceHistoryRowDTO row : rows) {
+            byTicker.computeIfAbsent(row.getTicker(), k -> new ArrayList<>())
+                    .add(
+                            new DomesticPriceHistoryResponseDTO.Point(
+                                    row.getBaseDate(), row.getCloseKrw()));
+        }
         return byTicker.entrySet().stream()
-                .map(e -> new DomesticPriceHistoryResponseDTO(e.getKey(), e.getValue()))
+                .map(
+                        e ->
+                                new DomesticPriceHistoryResponseDTO(
+                                        e.getKey(), List.copyOf(e.getValue())))
                 .toList();
     }
 }
