@@ -18,6 +18,9 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.NullAndEmptySource;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
@@ -73,42 +76,53 @@ class DomesticPriceHistoryApiTest {
         verify(service).findHistory(List.of("005930"), AS_OF, 60);
     }
 
+    private static final String PATH = "/api/domestic-prices/history";
+
     @Test
-    void 잘못된_요청은_서비스를_부르지_않고_400이다() throws Exception {
-        mvc.perform(get("/api/domestic-prices/history")).andExpect(status().isBadRequest());
-        // 종목 코드 형식
-        mvc.perform(
-                        get("/api/domestic-prices/history")
-                                .param("tickers", "invalid")
-                                .param("asOf", "2026-11-18"))
+    void 파라미터가_하나도_없으면_서비스를_부르지_않고_400이다() throws Exception {
+        mvc.perform(get(PATH)).andExpect(status().isBadRequest());
+        verifyNoInteractions(service);
+    }
+
+    @Test
+    void 종목_코드_형식이_틀리면_서비스를_부르지_않고_400이다() throws Exception {
+        mvc.perform(get(PATH).param("tickers", "invalid").param("asOf", "2026-11-18"))
                 .andExpect(status().isBadRequest());
-        // 종목 51개
+        verifyNoInteractions(service);
+    }
+
+    @Test
+    void 종목이_51개면_서비스를_부르지_않고_400이다() throws Exception {
         String tooMany =
                 IntStream.range(0, 51)
                         .mapToObj(i -> String.format("%06d", i))
                         .collect(Collectors.joining(","));
-        mvc.perform(
-                        get("/api/domestic-prices/history")
-                                .param("tickers", tooMany)
-                                .param("asOf", "2026-11-18"))
+        mvc.perform(get(PATH).param("tickers", tooMany).param("asOf", "2026-11-18"))
                 .andExpect(status().isBadRequest());
-        // asOf 누락·형식 오류
-        mvc.perform(get("/api/domestic-prices/history").param("tickers", "005930"))
-                .andExpect(status().isBadRequest());
-        mvc.perform(
-                        get("/api/domestic-prices/history")
-                                .param("tickers", "005930")
-                                .param("asOf", "11/18"))
-                .andExpect(status().isBadRequest());
-        // days 범위(0, 61, 숫자 아님)
-        for (String days : List.of("0", "61", "-3", "abc")) {
-            mvc.perform(
-                            get("/api/domestic-prices/history")
-                                    .param("tickers", "005930")
-                                    .param("asOf", "2026-11-18")
-                                    .param("days", days))
-                    .andExpect(status().isBadRequest());
+        verifyNoInteractions(service);
+    }
+
+    @ParameterizedTest(name = "asOf={0}")
+    @NullAndEmptySource
+    @ValueSource(strings = {"11/18", "2026-13-40"})
+    void asOf가_없거나_형식이_틀리면_서비스를_부르지_않고_400이다(String asOf) throws Exception {
+        var request = get(PATH).param("tickers", "005930");
+        if (asOf != null) {
+            request = request.param("asOf", asOf);
         }
+        mvc.perform(request).andExpect(status().isBadRequest());
+        verifyNoInteractions(service);
+    }
+
+    @ParameterizedTest(name = "days={0}")
+    @ValueSource(strings = {"0", "61", "-3", "abc"})
+    void days가_범위를_벗어나거나_숫자가_아니면_서비스를_부르지_않고_400이다(String days) throws Exception {
+        mvc.perform(
+                        get(PATH)
+                                .param("tickers", "005930")
+                                .param("asOf", "2026-11-18")
+                                .param("days", days))
+                .andExpect(status().isBadRequest());
         verifyNoInteractions(service);
     }
 }
