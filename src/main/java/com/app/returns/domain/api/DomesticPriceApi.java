@@ -1,6 +1,8 @@
 package com.app.returns.domain.api;
 
+import com.app.returns.domain.dto.request.DomesticPriceHistoryRequestDTO;
 import com.app.returns.domain.dto.request.DomesticPriceRequestDTO;
+import com.app.returns.domain.dto.response.DomesticPriceHistoryResponseDTO;
 import com.app.returns.domain.dto.response.DomesticPriceResponseDTO;
 import com.app.returns.domain.service.DomesticPriceService;
 import com.app.returns.global.response.ApiResponseDTO;
@@ -25,5 +27,17 @@ public class DomesticPriceApi {
             @Valid @ModelAttribute DomesticPriceRequestDTO request) {
         return ApiResponseDTO.of(
                 "현재가 조회 성공", service.findLatest(request.getTickers(), request.getAsOf()));
+    }
+
+    /**
+     * 종목별 asOf 당일을 포함해 asOf 이하 최근 days개 영업일의 저장 종가(날짜 오름차순, 기본 30·최대 60). 없는 종목은 누락되며 0원으로 대체하지
+     * 않는다. 저장된 종가 그대로이고 현재가용 배수는 곱하지 않는다. 응답 종목은 요청 순서가 아니라 종목코드 오름차순이므로 ticker로 찾아 쓴다.
+     */
+    @GetMapping(value = "/history", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ApiResponseDTO<List<DomesticPriceHistoryResponseDTO>> getHistory(
+            @Valid @ModelAttribute DomesticPriceHistoryRequestDTO request) {
+        return ApiResponseDTO.of(
+                "종가 이력 조회 성공",
+                service.findHistory(request.getTickers(), request.getAsOf(), request.getDays()));
     }
 }
