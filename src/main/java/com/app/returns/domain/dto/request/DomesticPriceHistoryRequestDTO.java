@@ -10,10 +10,11 @@ import lombok.Setter;
 @Setter
 public class DomesticPriceHistoryRequestDTO extends DomesticPriceRequestDTO {
     public static final int DEFAULT_DAYS = 30;
+    public static final int MIN_DAYS = 1;
     public static final int MAX_DAYS = 60;
 
     /** 종목마다 가져올 최근 영업일(종가) 수. */
-    @Min(value = 1, message = "일수는 1 이상이어야 합니다.")
-    @Max(value = MAX_DAYS, message = "일수는 60까지 조회할 수 있습니다.")
+    @Min(value = MIN_DAYS, message = "일수는 " + MIN_DAYS + " 이상이어야 합니다.")
+    @Max(value = MAX_DAYS, message = "일수는 " + MAX_DAYS + "까지 조회할 수 있습니다.")
     private int days = DEFAULT_DAYS;
 }
